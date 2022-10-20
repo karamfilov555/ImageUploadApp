@@ -11,7 +11,22 @@ namespace ImageResizeWebApp.Controllers
         [HttpPost("[action]")]
         public async Task<IActionResult> LoginMock([FromHeader]string email)
         {
-            return Ok(new JwtSecurityToken(expires: DateTime.Now.AddHours(2), audience:"dreamAudience", issuer: email));
+            var token = new JwtSecurityToken(expires: DateTime.Now.AddHours(2), audience: "dreamAudience", issuer: email);
+           
+            return Ok(token);
+        }
+
+        [HttpPost("[action]")]
+        public async Task<IActionResult> LoginMock2([FromHeader] string email)
+        {
+            if (!email.Equals("batman@abv.bg") || !email.Equals("daffy@abv.bg"))
+            {
+                return BadRequest("Invalid request");
+            }
+
+            var token = new JwtSecurityToken(expires: DateTime.Now.AddHours(2), audience: "dreamAudience", issuer: email);
+
+            return Ok(token);
         }
     }
 }
