@@ -9,24 +9,24 @@ namespace ImageResizeWebApp.Controllers
     public class MockLoginController : Controller
     {
         [HttpPost("[action]")]
-        public async Task<IActionResult> LoginMock([FromHeader]string email)
+        public async Task<IActionResult> LoginMock([FromHeader] string email)
         {
             var token = new JwtSecurityToken(expires: DateTime.Now.AddHours(2), audience: "dreamAudience", issuer: email);
-           
+
             return Ok(token);
         }
 
         [HttpPost("[action]")]
         public async Task<IActionResult> LoginMock2([FromHeader] string email)
         {
-            if (!email.Equals("batman@abv.bg") || !email.Equals("daffy@abv.bg"))
+            if (email.Equals("batman@abv.bg", StringComparison.InvariantCultureIgnoreCase) || email.Equals("daffy@abv.bg", StringComparison.InvariantCultureIgnoreCase))
             {
-                return BadRequest("Invalid request");
+                var token = new JwtSecurityToken(expires: DateTime.Now.AddHours(2), audience: "dreamAudience", issuer: email);
+                return Ok(token);
             }
 
-            var token = new JwtSecurityToken(expires: DateTime.Now.AddHours(2), audience: "dreamAudience", issuer: email);
 
-            return Ok(token);
+            return BadRequest("Invalid request");
         }
     }
 }
