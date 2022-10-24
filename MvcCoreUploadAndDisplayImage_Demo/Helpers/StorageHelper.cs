@@ -43,14 +43,16 @@ namespace MvcCoreUploadAndDisplayImage_Demo.Helpers
 
             // Create the blob client.
             BlobClient blobClient = new BlobClient(blobUri, storageCredentials);
+
+            // Upload the file
+            await blobClient.UploadAsync(fileStream);
+
+            // Set Metadata
             blobClient.SetMetadata(new Dictionary<string, string> { 
                 { "Title", postViewModel.Title }, 
                 { "Description", postViewModel.Description },
                 { "Redirect", postViewModel.UrlForRedirect } 
             });
-
-            // Upload the file
-            await blobClient.UploadAsync(fileStream);
 
             return await Task.FromResult(true);
         }
