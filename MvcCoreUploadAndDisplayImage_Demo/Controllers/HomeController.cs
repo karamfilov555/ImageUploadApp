@@ -58,7 +58,7 @@ namespace MvcCoreUploadAndDisplayImage_Demo.Controllers
                         {
                             using (Stream stream = model.PostImage.OpenReadStream())
                             {
-                                isUploaded = await StorageHelper.UploadFileToStorage(stream, model.PostImage.FileName, storageConfig);
+                                isUploaded = await StorageHelper.UploadFileToStorage(stream, model, storageConfig);
                             }
                         }
                         else

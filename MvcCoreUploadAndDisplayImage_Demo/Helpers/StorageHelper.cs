@@ -2,7 +2,10 @@
 using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.Http;
 using MvcCoreUploadAndDisplayImage_Demo.Config;
+using MvcCoreUploadAndDisplayImage_Demo.ViewModels;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -23,7 +26,7 @@ namespace MvcCoreUploadAndDisplayImage_Demo.Helpers
             return formats.Any(item => file.FileName.EndsWith(item, StringComparison.OrdinalIgnoreCase));
         }
 
-        public static async Task<bool> UploadFileToStorage(Stream fileStream, string fileName,
+        public static async Task<bool> UploadFileToStorage(Stream fileStream, PostViewModel postViewModel,
                                                             AzureStorageConfig _storageConfig)
         {
             // Create a URI to the blob
@@ -31,7 +34,7 @@ namespace MvcCoreUploadAndDisplayImage_Demo.Helpers
                                   _storageConfig.AccountName +
                                   ".blob.core.windows.net/" +
                                   _storageConfig.ImageContainer +
-                                  "/" + fileName);
+                                  "/" + postViewModel.PostImage.FileName);
 
             // Create StorageSharedKeyCredentials object by reading
             // the values from the configuration (appsettings.json)
@@ -40,6 +43,11 @@ namespace MvcCoreUploadAndDisplayImage_Demo.Helpers
 
             // Create the blob client.
             BlobClient blobClient = new BlobClient(blobUri, storageCredentials);
+            blobClient.SetMetadata(new Dictionary<string, string> { 
+                { "Title", postViewModel.Title }, 
+                { "Description", postViewModel.Description },
+                { "Redirect", postViewModel.UrlForRedirect } 
+            });
 
             // Upload the file
             await blobClient.UploadAsync(fileStream);
