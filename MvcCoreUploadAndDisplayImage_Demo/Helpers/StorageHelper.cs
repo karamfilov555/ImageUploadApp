@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Http;
 using MvcCoreUploadAndDisplayImage_Demo.Config;
 using MvcCoreUploadAndDisplayImage_Demo.ViewModels;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -51,7 +50,8 @@ namespace MvcCoreUploadAndDisplayImage_Demo.Helpers
             blobClient.SetMetadata(new Dictionary<string, string> { 
                 { "Title", postViewModel.Title }, 
                 { "Description", postViewModel.Description },
-                { "Redirect", postViewModel.UrlForRedirect } 
+                { "Redirect", postViewModel.UrlForRedirect }, 
+                { "CreatedDate", DateTime.UtcNow.ToString() } 
             });
 
             return await Task.FromResult(true);
