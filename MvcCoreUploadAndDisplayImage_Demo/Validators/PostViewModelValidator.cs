@@ -28,6 +28,11 @@ namespace MvcCoreUploadAndDisplayImage_Demo.Validators
                 vr.Succeeded = false;
                 vr.Errors.Add("Redirect url cannot be empty.");
             }
+            if (postViewModel.PostImage is null)
+            {
+                vr.Succeeded = false;
+                vr.Errors.Add("Image filed cannot be empty.");
+            }
 
             return vr;
         }

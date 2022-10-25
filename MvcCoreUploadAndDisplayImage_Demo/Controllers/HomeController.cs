@@ -58,6 +58,11 @@ namespace MvcCoreUploadAndDisplayImage_Demo.Controllers
             return View("Upload");
         }
 
+        public async Task<IActionResult> Upload()
+        {
+            return View();
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Upload(PostViewModel model)
