@@ -15,6 +15,8 @@ namespace MvcCoreUploadAndDisplayImage_Demo.Controllers
     {
         private readonly AzureStorageConfig storageConfig;
         private readonly IToastNotification toast;
+        private static bool isLogged = false;
+
 
         public HomeController(
             IOptions<AzureStorageConfig> options,
@@ -29,15 +31,42 @@ namespace MvcCoreUploadAndDisplayImage_Demo.Controllers
             return View();
         }
 
-        public IActionResult New()
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Login(LoginViewModel loginViewModel)
         {
-            return View();
+            if (loginViewModel is null || 
+                string.IsNullOrWhiteSpace(loginViewModel.Username) || 
+                string.IsNullOrWhiteSpace(loginViewModel.Password))
+            {
+                toast.AddErrorToastMessage("Please fill all required fields!");
+                return View("Index");
+            }
+            if (!loginViewModel.Username.Equals("dr.adm1n"))
+            {
+                toast.AddErrorToastMessage("Invalid credentials!");
+                return View("Index");
+            }
+            if (!loginViewModel.Password.Equals("p4$$word"))
+            {
+                toast.AddErrorToastMessage("Invalid credentials!");
+                return View("Index");
+            }
+
+            isLogged = true;
+            toast.AddSuccessToastMessage("Welcome back Admin!");
+            return View("Upload");
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> New(PostViewModel model)
+        public async Task<IActionResult> Upload(PostViewModel model)
         {
+            if (!isLogged)
+            {
+                toast.AddErrorToastMessage("Please login");
+                return View("Index");
+            }
             bool isUploaded = false;
 
             var vr = PostViewModelValidator.Validate(model);
@@ -56,10 +85,8 @@ namespace MvcCoreUploadAndDisplayImage_Demo.Controllers
                     {
                         if (model.PostImage.Length > 0)
                         {
-                            using (Stream stream = model.PostImage.OpenReadStream())
-                            {
-                                isUploaded = await StorageHelper.UploadFileToStorage(stream, model, storageConfig);
-                            }
+                            using Stream stream = model.PostImage.OpenReadStream();
+                            isUploaded = await StorageHelper.UploadFileToStorage(stream, model, storageConfig);
                         }
                         else
                         {
@@ -69,13 +96,13 @@ namespace MvcCoreUploadAndDisplayImage_Demo.Controllers
                     else
                     {
                         toast.AddErrorToastMessage($"Unsupported file format! Please provide one of the following file formats: \".jpg\", \".png\", \".gif\", \".jpeg\"");
-                        return Redirect("Index");
+                        return Redirect("Upload");
                     }
                 }
                 else
                 {
                     toast.AddErrorToastMessage("Please fill all required fields!");
-                    return View("Index");
+                    return View("Upload");
                 }
             }
             catch (Exception ex)
@@ -83,10 +110,10 @@ namespace MvcCoreUploadAndDisplayImage_Demo.Controllers
                 if (ex.Message.Contains("The specified blob already exists."))
                 {
                     toast.AddErrorToastMessage("Image with the same name already exists in the database.");
-                    return View("Index");
+                    return View("Upload");
                 }
                 toast.AddErrorToastMessage(ex.Message);
-                return View("Index");
+                return View("Upload");
             }
             if (isUploaded)
             {
@@ -96,7 +123,7 @@ namespace MvcCoreUploadAndDisplayImage_Demo.Controllers
             {
                 toast.AddErrorToastMessage("Something went wrong!");
             }
-            return Redirect("Index");
+            return Redirect("Upload");
         }
     }
 }

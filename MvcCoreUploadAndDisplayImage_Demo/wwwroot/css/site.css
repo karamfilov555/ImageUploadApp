@@ -51,6 +51,10 @@ button.accept-policy {
   line-height: inherit;
 }
 
+.sideBySideForm {
+    display: inline-block;
+}
+
 /* Sticky footer styles
 -------------------------------------------------- */
 html {
