@@ -62,5 +62,41 @@ namespace MvcCoreUploadAndDisplayImage_Demo.Helpers
 
             return await Task.FromResult(true);
         }
+
+        public static async Task<bool> UploadFileToStorage(Stream fileStream, BannerViewModel bannerViewModel,
+                                                            AzureStorageConfig _storageConfig)
+        {
+            // Create a URI to the blob
+            Uri blobUri = new Uri("https://" +
+                                  _storageConfig.AccountName +
+                                  ".blob.core.windows.net/" +
+                                  _storageConfig.ThumbnailsContainer +
+                                  "/" + bannerViewModel.PostImage.FileName);
+
+            // Create StorageSharedKeyCredentials object by reading
+            // the values from the configuration (appsettings.json)
+            StorageSharedKeyCredential storageCredentials =
+                new StorageSharedKeyCredential(_storageConfig.AccountName, _storageConfig.AccountKey);
+
+            // Create the blob client.
+            BlobClient blobClient = new BlobClient(blobUri, storageCredentials);
+
+            try
+            {
+                // Upload the file
+                await blobClient.UploadAsync(fileStream);
+                var date = DateTime.UtcNow.ToString();
+                // Set Metadata
+                blobClient.SetMetadata(new Dictionary<string, string> {
+                { "Redirect", bannerViewModel.UrlForRedirect },
+                { "CreatedDate", DateTime.UtcNow.ToString() }});
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return await Task.FromResult(true);
+        }
     }
 }

@@ -1,7 +1,7 @@
 ﻿@model MvcCoreUploadAndDisplayImage_Demo.ViewModels.PostViewModel
 
 @{
-    ViewData["Title"] = "Upload";
+    ViewData["Title"] = "UploadPost";
 }
 
 <div class="col-md-10 mx-auto py-4">
@@ -11,7 +11,7 @@
         </div>
         </div>
         <div class="card-body">
-            <form enctype="multipart/form-data" asp-action="Upload">
+            <form enctype="multipart/form-data" asp-action="UploadPost">
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
@@ -56,12 +56,57 @@
                 </div>
                 <div class="form-group">
                     <input type="submit" value="submit" class="btn btn-sm btn-primary rounded-0 text-uppercase" />
-                    <a asp-action="Upload" class="btn btn-sm btn-primary rounded-0 text-uppercase"><i class="fas fa-fast-backward"></i> Clear all</a>
+                    <a asp-action="UploadPost" class="btn btn-sm btn-primary rounded-0 text-uppercase"><i class="fas fa-fast-backward"></i> Clear all</a>
                 </div>
             </form>
         </div>
     </div>
 </div>
+<div class="col-md-10 mx-auto py-4">
+    <div class="card">
+        <div class="card-header bg-primary text-uppercase text-white">
+            <h4>Add New Banner</h4>
+        </div>
+    </div>
+    <div class="card-body">
+        <form enctype="multipart/form-data" asp-action="UploadBanner">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="PostImage" class="control-label"></label>
+                        <div class="custom-file">
+                            <input asp-for="PostImage" class="custom-file-input2" id="customFile2">
+                            <label class="custom-file-label2" for="customFile2">Choose file</label>
+                        </div>
+                        <span asp-validation-for="PostImage" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="UrlForRedirect" class="control-label"></label>
+                        <input asp-for="UrlForRedirect" class="form-control" />
+                        <span asp-validation-for="UrlForRedirect" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label><center> Image Preview</center></label>
+                        <img id="uploadPreview2" style="width: 400px; height: 400px;" />
+                    </div>
+                </div>
+
+            </div>
+            <div class="form-group">
+                <input type="submit" value="submit" class="btn btn-sm btn-primary rounded-0 text-uppercase" />
+                <a asp-action="UploadBanner" class="btn btn-sm btn-primary rounded-0 text-uppercase"><i class="fas fa-fast-backward"></i> Clear all</a>
+            </div>
+        </form>
+    </div>
+</div>
+</div>
+
+
+
 @await Component.InvokeAsync("NToastNotify")
 @section scripts{
     <script type="text/javascript">
@@ -76,6 +121,23 @@
 
             oFReader.onload = function (oFREvent) {
                 document.getElementById("uploadPreview").src = oFREvent.target.result;
+            };
+
+        });
+    </script>
+
+    <script type="text/javascript">
+        // Add the following code if you want the name of the file appear on select
+        $(".custom-file-input2").on("change", function () {
+            var fileName = $(this).val().split("\\").pop();
+            $(this).siblings(".custom-file-label2").addClass("selected").html(fileName);
+
+            //For the preview:
+            var oFReader = new FileReader();
+            oFReader.readAsDataURL(document.getElementById("customFile2").files[0]);
+
+            oFReader.onload = function (oFREvent) {
+                document.getElementById("uploadPreview2").src = oFREvent.target.result;
             };
 
         });
